@@ -261,7 +261,8 @@ class TFFMClassifier(object):
         xv_sum_squared = tf.pow(tf.reduce_sum(tf.multiply(embedding_t, value_t), axis=1), 2) # shaped [-1, factor_num]
         xsq_mul_vsq = tf.multiply(tf.pow(embedding_t, 2), tf.pow(value_t, 2)) # shaped [-1, feature_num, factor_num]
         xsq_mul_vsq_sum = tf.reduce_sum(xsq_mul_vsq, axis=1) # shaped [-1, factor_num]
-        h = tf.add(tf.reduce_sum(xsq_mul_vsq_sum, axis=1, keepdims=True), h) # shaped [-1, 1]
+        interaction_t = 0.5 * tf.subtract(xv_sum_squared, xsq_mul_vsq_sum)
+        h = tf.add(tf.reduce_sum(interaction_t, axis=1, keepdims=True), h) # shaped [-1, 1]
 
         return h
 
