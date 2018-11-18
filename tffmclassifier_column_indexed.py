@@ -250,16 +250,16 @@ class TFFMClassifier(object):
         h = self.b
 
         # linear term
-        value_t = tf.reshape(self.X_colval, shape=[-1, self.feature_num, 1]) # shaped [-1, feature_num, 1]
-        linear_h = tf.multiply(tf.nn.embedding_lookup(self.w, self.X_colind), value_t) # shaped [-1, feature_num, 1]
-        linear_h = tf.reduce_sum(linear_h, axis=2) # shaped [-1, feature_num]
+        value_t = tf.reshape(self.X_colval, shape=[-1, self.feature_num, 1]) # shaped [-1, field_num, 1]
+        linear_h = tf.multiply(tf.nn.embedding_lookup(self.w, self.X_colind), value_t) # shaped [-1, field_num, 1]
+        linear_h = tf.reduce_sum(linear_h, axis=2) # shaped [-1, field_num]
         linear_h = tf.reduce_sum(linear_h, axis=1, keepdims=True) # shaped [-1, 1]
         h = tf.add(h, linear_h)
 
         # interaction term
-        embedding_t = tf.nn.embedding_lookup(self.v, self.X_colind) # shaped [-1, feature_num, factor_num]
+        embedding_t = tf.nn.embedding_lookup(self.v, self.X_colind) # shaped [-1, field_num, factor_num]
         xv_sum_squared = tf.pow(tf.reduce_sum(tf.multiply(embedding_t, value_t), axis=1), 2) # shaped [-1, factor_num]
-        xsq_mul_vsq = tf.multiply(tf.pow(embedding_t, 2), tf.pow(value_t, 2)) # shaped [-1, feature_num, factor_num]
+        xsq_mul_vsq = tf.multiply(tf.pow(embedding_t, 2), tf.pow(value_t, 2)) # shaped [-1, field_num, factor_num]
         xsq_mul_vsq_sum = tf.reduce_sum(xsq_mul_vsq, axis=1) # shaped [-1, factor_num]
         interaction_t = 0.5 * tf.subtract(xv_sum_squared, xsq_mul_vsq_sum)
         h = tf.add(tf.reduce_sum(interaction_t, axis=1, keepdims=True), h) # shaped [-1, 1]
